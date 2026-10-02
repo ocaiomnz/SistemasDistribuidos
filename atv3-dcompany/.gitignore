@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+.venv
+imagens/armazenamento/**/*.png
+imagens/armazenamento/**/*.jpg
+imagens/armazenamento/**/*.tmp

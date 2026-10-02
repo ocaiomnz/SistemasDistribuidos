@@ -1,0 +1,17 @@
+{
+  "name": "denatran",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Microsserviços do DENATRAN sobre MQTT",
+  "scripts": {
+    "condutores": "node src/servicos/condutores.js",
+    "veiculos": "node src/servicos/veiculos.js",
+    "multas": "node src/servicos/multas.js",
+    "demo": "node src/demo.js",
+    "cliente": "node src/cliente.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.14.1"
+  }
+}

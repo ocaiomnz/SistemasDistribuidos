@@ -1,0 +1,4 @@
+resultados
+bin
+*.o
+__pycache__

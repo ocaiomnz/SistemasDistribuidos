@@ -1,0 +1,60 @@
+name: denatran
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -h localhost -t '$$SYS/broker/uptime' -C 1 -W 5"]
+      interval: 3s
+      timeout: 8s
+      retries: 15
+      start_period: 5s
+
+  condutores:
+    build: .
+    command: ["node", "src/servicos/condutores.js"]
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+      RESET: "1"
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+
+  veiculos:
+    build: .
+    command: ["node", "src/servicos/veiculos.js"]
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+      RESET: "1"
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+
+  multas:
+    build: .
+    command: ["node", "src/servicos/multas.js"]
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+      RESET: "1"
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+
+  demo:
+    build: .
+    command: ["node", "src/demo.js"]
+    environment:
+      MQTT_URL: mqtt://mosquitto:1883
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+      condutores:
+        condition: service_started
+      veiculos:
+        condition: service_started
+      multas:
+        condition: service_started

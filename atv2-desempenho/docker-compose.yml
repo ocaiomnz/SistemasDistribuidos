@@ -1,0 +1,7 @@
+name: desempenho-ufs
+
+services:
+  experimento:
+    build: .
+    volumes:
+      - ./resultados:/app/resultados

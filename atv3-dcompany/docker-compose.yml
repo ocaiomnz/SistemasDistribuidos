@@ -1,0 +1,99 @@
+name: dcompany
+
+x-python: &python
+  build: .
+  environment:
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_USER: dcompany
+    RABBITMQ_PASS: dcompany
+    PYTHONPATH: /app/src
+    PYTHONUNBUFFERED: "1"
+  depends_on:
+    rabbitmq:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: dcompany
+      RABBITMQ_DEFAULT_PASS: dcompany
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 15s
+
+  conversor1:
+    <<: *python
+    command: ["python", "src/conversor.py", "--id", "conversor1"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  conversor2:
+    <<: *python
+    command: ["python", "src/conversor.py", "--id", "conversor2"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  armazenamento1:
+    <<: *python
+    command: ["python", "src/armazenamento.py", "--id", "servidor1", "--pasta", "/dados"]
+    volumes:
+      - ./imagens/armazenamento/servidor1:/dados
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  armazenamento2:
+    <<: *python
+    command: ["python", "src/armazenamento.py", "--id", "servidor2", "--pasta", "/dados"]
+    volumes:
+      - ./imagens/armazenamento/servidor2:/dados
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/ready"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  cliente1:
+    <<: *python
+    profiles: ["teste"]
+    restart: "no"
+    command: ["python", "src/cliente.py", "--id", "cliente1", "--pasta", "/imagens"]
+    volumes:
+      - ./imagens/clientes/cliente1:/imagens:ro
+
+  cliente2:
+    <<: *python
+    profiles: ["teste"]
+    restart: "no"
+    command: ["python", "src/cliente.py", "--id", "cliente2", "--pasta", "/imagens"]
+    volumes:
+      - ./imagens/clientes/cliente2:/imagens:ro
+
+  verificador:
+    <<: *python
+    profiles: ["teste"]
+    restart: "no"
+    command: ["python", "scripts/verificar.py"]
+    volumes:
+      - ./imagens/clientes:/clientes:ro
+      - ./imagens/armazenamento:/armazenamento:ro
