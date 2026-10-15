@@ -19,9 +19,9 @@ Na pasta `atv3-dcompany`:
 ```powershell
 python scripts/gerar_imagens.py
 docker compose up -d --build --wait rabbitmq conversor1 conversor2 armazenamento1 armazenamento2
-docker compose --profile teste run --rm cliente1
-docker compose --profile teste run --rm cliente2
-docker compose --profile teste run --rm verificador
+docker compose --profile teste run --rm --build cliente1
+docker compose --profile teste run --rm --build cliente2
+docker compose --profile teste run --rm --build verificador
 docker compose down
 ```
 
@@ -30,9 +30,9 @@ No bash, a mesma sequência:
 ```bash
 python3 scripts/gerar_imagens.py
 docker compose up -d --build --wait rabbitmq conversor1 conversor2 armazenamento1 armazenamento2
-docker compose --profile teste run --rm cliente1
-docker compose --profile teste run --rm cliente2
-docker compose --profile teste run --rm verificador
+docker compose --profile teste run --rm --build cliente1
+docker compose --profile teste run --rm --build cliente2
+docker compose --profile teste run --rm --build verificador
 docker compose down
 ```
 
