@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O Caos · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <%- include("parciais/topo") %>
+
+  <main class="painel painel-caos" id="conteudo">
+    <section class="area-breaker" aria-labelledby="titulo-breaker">
+      <div class="cabeca-secao">
+        <div>
+          <h2 id="titulo-breaker">Circuit breaker do mercado</h2>
+          <p class="legenda" id="breaker-resumo">Suspende a negociação quando o preço foge da referência.</p>
+        </div>
+        <div class="acoes">
+          <label class="compacto">Duração (s)
+            <input id="breaker-duracao" type="number" min="5" max="600" step="5" value="30">
+          </label>
+          <button type="button" class="perigo" id="suspender-mercado">Suspender o mercado inteiro</button>
+          <button type="button" class="secundario" id="liberar-tudo">Liberar tudo</button>
+        </div>
+      </div>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Ativo</th><th class="num">Último</th><th class="num">vs. referência</th><th>Últimos negócios</th><th>Estado</th><th>Ação</th></tr></thead>
+          <tbody id="breaker-ativos"></tbody>
+        </table>
+      </div>
+      <form id="form-breaker-config" class="linha-form">
+        <label class="caixa"><input type="checkbox" id="breaker-auto" checked> Disparo automático</label>
+        <label class="compacto">Limite de variação (%)
+          <input id="breaker-limite" type="number" min="1" max="50" step="1" value="15">
+        </label>
+        <label class="compacto">Pausa automática (s)
+          <input id="breaker-pausa" type="number" min="5" max="600" step="5" value="30">
+        </label>
+        <button type="submit" class="secundario">Salvar regra</button>
+      </form>
+    </section>
+
+    <section class="area-servico" aria-labelledby="titulo-servico">
+      <h2 id="titulo-servico">Breaker do serviço</h2>
+      <p class="legenda">Protege o banco: após 3 falhas seguidas, o motor recusa ordens na hora por 10 s e depois testa com uma única ordem.</p>
+      <p class="display" id="servico-estado">—</p>
+      <p class="contexto" id="servico-contexto"></p>
+      <div class="linha-form">
+        <label class="compacto">Falha por (s)
+          <input id="falha-segundos" type="number" min="5" max="120" step="5" value="15">
+        </label>
+        <button type="button" class="perigo" id="injetar-falha">Derrubar o banco</button>
+      </div>
+      <div class="acoes">
+        <button type="button" class="secundario" id="abrir-servico">Abrir breaker</button>
+        <button type="button" class="texto" id="fechar-servico">Fechar breaker</button>
+      </div>
+    </section>
+
+    <section class="area-alavancagem" aria-labelledby="titulo-alavancagem">
+      <h2 id="titulo-alavancagem">Alavancagem dos agentes</h2>
+      <p class="legenda">Cada agente toma emprestado até ficar com o patrimônio multiplicado. Ordens crescem na mesma proporção e, se a margem cair abaixo de 10%, vem a chamada de margem: liquidação forçada.</p>
+      <p class="display" id="alavancagem-atual">1×</p>
+      <form id="form-alavancagem" class="linha-form">
+        <label class="compacto">Fator
+          <input id="alavancagem" type="range" min="1" max="10" step="0.5" value="1">
+        </label>
+        <output id="alavancagem-saida" for="alavancagem">1×</output>
+        <button type="submit" class="primario">Aplicar alavancagem</button>
+      </form>
+      <p class="contexto" id="alavancagem-contexto"></p>
+    </section>
+
+    <section class="area-roleta" aria-labelledby="titulo-roleta">
+      <h2 id="titulo-roleta">Roleta da fortuna</h2>
+      <p class="legenda">A cada rodada, cada agente sorteado pode ganhar muito dinheiro ou quebrar. Quebrar zera o caixa e despeja a carteira no livro com desconto. A alavancagem multiplica a chance de quebra e o tamanho da fortuna.</p>
+      <form id="form-roleta" class="grade-form">
+        <label class="caixa"><input type="checkbox" id="roleta-ativa"> Roleta ligada</label>
+        <label>Chance de ganho por rodada (%)
+          <input id="roleta-ganho" type="number" min="0" max="50" step="0.5" value="4">
+        </label>
+        <label>Chance de quebra por rodada (%)
+          <input id="roleta-quebra" type="number" min="0" max="50" step="0.5" value="3">
+        </label>
+        <button type="submit" class="secundario">Salvar roleta</button>
+      </form>
+      <div class="acoes">
+        <button type="button" class="secundario" id="forcar-ganho">Dar fortuna a um robô sorteado</button>
+        <button type="button" class="perigo" id="forcar-quebra">Quebrar um robô sorteado</button>
+        <button type="button" class="texto" id="reanimar">Reanimar quebrados</button>
+      </div>
+      <p class="legenda">Ana e Bruno, os agentes fundadores, ficam fora da roleta e da alavancagem para o mercado nunca secar.</p>
+    </section>
+
+    <section class="area-baleias" aria-labelledby="titulo-baleias">
+      <div class="cabeca-secao">
+        <div>
+          <h2 id="titulo-baleias">Baleias</h2>
+          <p class="legenda">Agentes com muito dinheiro: acumulam o papel até dominar uma fatia, vendem pouco para empurrar o preço, e quando batem a meta despejam tudo e sacam. Quem ficou com o papel paga a conta.</p>
+        </div>
+      </div>
+      <form id="form-baleia" class="grade-form grade-baleia">
+        <label>Ativo alvo
+          <select id="baleia-ticker" required></select>
+        </label>
+        <label>Capital próprio (R$)
+          <input id="baleia-capital" type="number" min="10000" max="100000000" step="10000" value="2000000" required>
+        </label>
+        <label>Alavancagem
+          <input id="baleia-alavancagem" type="number" min="1" max="10" step="0.5" value="2" required>
+        </label>
+        <label>Meta de participação (%)
+          <input id="baleia-participacao" type="number" min="5" max="95" step="5" value="50" required>
+        </label>
+        <label>Meta de ganho sobre o médio (%)
+          <input id="baleia-lucro" type="number" min="1" max="500" step="1" value="15" required>
+        </label>
+        <button type="submit" class="primario">Soltar baleia</button>
+      </form>
+      <div id="baleias" class="lista-baleias"></div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/comum.js"></script>
+  <script src="/caos.js"></script>
+</body>
+</html>

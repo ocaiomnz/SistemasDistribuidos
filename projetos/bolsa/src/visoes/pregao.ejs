@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Broker · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <%- include("parciais/topo") %>
+
+  <main class="grade" id="conteudo" aria-busy="true">
+    <nav class="ativos" aria-label="Ativos do pregão">
+      <h2>Ativos</h2>
+      <p class="legenda">Escolha o papel para ver o preço e o livro.</p>
+      <div id="ativos" class="lista-ativos"></div>
+      <div class="bloco">
+        <h2>Notícias</h2>
+        <p class="legenda">O que acontece com as empresas mexe com a confiança do mercado.</p>
+        <ul id="noticias" class="noticias-hb"></ul>
+      </div>
+    </nav>
+
+    <section class="mercado" aria-labelledby="titulo-mercado">
+      <h2 id="titulo-mercado" class="somente-leitor">Mercado do ativo selecionado</h2>
+      <header class="cotacao">
+        <p class="rotulo" id="cotacao-ticker">Ativo</p>
+        <p class="cotacao-nome" id="cotacao-nome">Carregando o pregão</p>
+        <p class="display" id="cotacao-preco">—</p>
+        <p class="contexto" id="cotacao-contexto">Livro, carteira e ordens entram em seguida.</p>
+      </header>
+
+      <div class="bloco">
+        <h2>Livro <span id="ticker-livro"></span></h2>
+        <p class="legenda">A primeira linha de cada lado é a melhor oferta.</p>
+        <div class="livro">
+          <div>
+            <h3 class="compra">Compra</h3>
+            <table aria-labelledby="titulo-compras">
+              <caption id="titulo-compras" class="somente-leitor">Ofertas de compra</caption>
+              <thead><tr><th>Investidor</th><th class="num">Qtd</th><th class="num">Preço</th></tr></thead>
+              <tbody id="compras"></tbody>
+            </table>
+          </div>
+          <div>
+            <h3 class="venda">Venda</h3>
+            <table aria-labelledby="titulo-vendas">
+              <caption id="titulo-vendas" class="somente-leitor">Ofertas de venda</caption>
+              <thead><tr><th class="num">Preço</th><th class="num">Qtd</th><th>Investidor</th></tr></thead>
+              <tbody id="vendas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="bloco">
+        <h2>Negociações recentes</h2>
+        <p class="legenda">Últimos cruzamentos deste ativo.</p>
+        <table aria-labelledby="titulo-negociacoes">
+          <caption id="titulo-negociacoes" class="somente-leitor">Negociações recentes</caption>
+          <thead><tr><th>Quando</th><th class="num">Qtd</th><th class="num">Preço</th><th>Comprador</th><th>Vendedor</th></tr></thead>
+          <tbody id="negociacoes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="conta" aria-labelledby="titulo-conta">
+      <h2 id="titulo-conta">Sua conta</h2>
+      <p class="rotulo">Patrimônio</p>
+      <p class="display" id="patrimonio">—</p>
+      <p class="contexto" id="patrimonio-contexto">Comparado ao capital inicial, assim que a carteira carregar.</p>
+      <dl class="metricas" id="resumo"></dl>
+
+      <div class="bloco">
+        <h2>Posições</h2>
+        <table>
+          <thead><tr><th>Ativo</th><th class="num">Qtd</th><th class="num">Médio</th><th class="num">Resultado</th></tr></thead>
+          <tbody id="posicoes"></tbody>
+        </table>
+      </div>
+
+      <form id="form-ordem" class="ordem">
+        <h2>Nova ordem</h2>
+        <p class="legenda">Ordem limitada. O saldo ou as ações ficam reservados até executar ou cancelar.</p>
+        <label>Ativo
+          <select id="ticker" name="ticker" required></select>
+        </label>
+        <fieldset class="lado">
+          <legend>Lado</legend>
+          <label><input type="radio" name="lado" value="compra" checked> Compra</label>
+          <label><input type="radio" name="lado" value="venda"> Venda</label>
+        </fieldset>
+        <p class="legenda" id="ajuda-lado">A compra reserva o saldo pelo preço limite. Se executar mais barato, a diferença volta.</p>
+        <label>Quantidade
+          <input id="quantidade" name="quantidade" type="number" min="1" max="100000" step="1" value="10" required>
+        </label>
+        <p class="legenda">Número inteiro de ações, de 1 a 100.000.</p>
+        <label>Preço limite
+          <input id="preco" name="preco" inputmode="decimal" required placeholder="18,50">
+        </label>
+        <p class="legenda">Use vírgula, como 18,50. A ordem não executa por um preço pior que este.</p>
+        <button type="submit" class="primario" id="enviar">Comprar</button>
+      </form>
+
+      <div class="bloco">
+        <h2>Minhas ordens</h2>
+        <p id="detalhe-ordem" class="legenda">Selecione “Ver status” para reler uma ordem sem sair da lista.</p>
+        <table>
+          <thead><tr><th>#</th><th>Ativo</th><th>Lado</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="minhas-ordens"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/homebroker.js"></script>
+</body>
+</html>

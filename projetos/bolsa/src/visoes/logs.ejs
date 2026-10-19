@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logs e segurança · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <%- include("parciais/topo") %>
+
+  <main class="painel painel-logs" id="conteudo">
+    <section class="area-integridade" aria-labelledby="titulo-integridade">
+      <p class="rotulo">Autenticidade em tempo real</p>
+      <h2 id="titulo-integridade">Cadeia de logs</h2>
+      <p class="display" id="cadeia-estado">Verificando…</p>
+      <p class="contexto" id="cadeia-contexto">Cada registro carrega o SHA-256 do anterior. O navegador recalcula o hash de cada linha que chega.</p>
+      <dl class="metricas" id="cadeia-detalhes"></dl>
+      <div class="acoes">
+        <button type="button" class="primario" id="verificar-cadeia">Verificar cadeia no servidor</button>
+        <button type="button" class="perigo" id="adulterar">Simular adulteração</button>
+        <button type="button" class="texto" id="restaurar">Restaurar registros</button>
+      </div>
+    </section>
+
+    <section class="area-monitor" aria-labelledby="titulo-monitor">
+      <p class="rotulo">Atualiza a cada 2 segundos</p>
+      <h2 id="titulo-monitor">Monitoramento dos serviços</h2>
+      <div class="monitor" id="monitor"></div>
+    </section>
+
+    <section class="area-trilha" aria-labelledby="titulo-trilha">
+      <h2 id="titulo-trilha">Rastrear uma ordem</h2>
+      <p class="legenda">Da entrada até a notificação dos clientes, lido da tabela de eventos.</p>
+      <form id="form-trilha" class="linha-form">
+        <label>Número da ordem
+          <input id="ordem-id" name="ordem" type="number" min="1" step="1" required placeholder="123">
+        </label>
+        <button type="submit" class="primario">Rastrear</button>
+      </form>
+      <p class="rotulo">Ordens recentes</p>
+      <div id="ordens-recentes" class="chips"></div>
+      <div id="trilha" class="trilha"></div>
+    </section>
+
+    <section class="area-fluxo" aria-labelledby="titulo-fluxo">
+      <div class="cabeca-secao">
+        <div>
+          <h2 id="titulo-fluxo">Logs ao vivo</h2>
+          <p class="legenda" id="fluxo-estado">Conectando ao fluxo de logs</p>
+        </div>
+        <button type="button" class="secundario" id="pausar">Pausar</button>
+      </div>
+      <div class="filtros">
+        <label>Categoria
+          <select id="filtro-categoria">
+            <option value="">Todas</option>
+            <option value="ordem">Ordens</option>
+            <option value="seguranca">Segurança</option>
+            <option value="caos">Caos e breakers</option>
+            <option value="mundo">Mundo e notícias</option>
+            <option value="admin">Admin</option>
+            <option value="erro">Erros</option>
+            <option value="sistema">Sistema</option>
+          </select>
+        </label>
+        <label>Nível
+          <select id="filtro-nivel">
+            <option value="">Todos</option>
+            <option value="info">Info</option>
+            <option value="aviso">Aviso</option>
+            <option value="erro">Erro</option>
+          </select>
+        </label>
+        <label>Buscar
+          <input id="filtro-texto" type="search" placeholder="ORDER_ ou ordemId=42">
+        </label>
+      </div>
+      <div class="rolagem">
+        <table class="tabela-logs">
+          <thead><tr><th class="num">Seq</th><th>Hora</th><th>Nível</th><th>Evento</th><th>Detalhe</th><th>Hash</th></tr></thead>
+          <tbody id="logs"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="area-seguranca" aria-labelledby="titulo-seguranca">
+      <div class="cabeca-secao">
+        <div>
+          <h2 id="titulo-seguranca">Segurança</h2>
+          <p class="legenda">Cada controle abaixo pode ser testado agora: as sondas atacam a própria API com uma conta comum.</p>
+        </div>
+        <button type="button" class="primario" id="rodar-sondas">Rodar sondas de segurança</button>
+      </div>
+      <div class="duas-colunas">
+        <table>
+          <thead><tr><th>Requisito</th><th>Como o sistema garante</th></tr></thead>
+          <tbody>
+            <tr><td>Autenticação</td><td>Senha com bcrypt, sessão regenerada no login, cookie HttpOnly e SameSite, bloqueio após 5 erros em 5 minutos.</td></tr>
+            <tr><td>Autorização</td><td>Papel guardado na sessão; rotas de Logs, O Caos e Admin exigem ADMIN e respondem 403.</td></tr>
+            <tr><td>Validação</td><td>Ticker, lado, quantidade e preço validados no servidor; campos extras recusados; corpo limitado a 20 kB.</td></tr>
+            <tr><td>Proteção das operações</td><td>POST e DELETE exigem o cabeçalho x-pregao (anti-CSRF) e há limite de 30 ordens por segundo.</td></tr>
+            <tr><td>Controle de acesso</td><td>O investidor sai sempre da sessão, nunca do corpo; consultas filtram pelo dono.</td></tr>
+            <tr><td>Saldo e carteira</td><td>Reserva sob FOR UPDATE numa transação, fila única e CHECK no banco contra saldo ou reserva negativos.</td></tr>
+            <tr><td>Ordens alheias</td><td>Cancelar exige ser o dono; a tentativa gera ORDEM_ALHEIA_BLOQUEADA e 403.</td></tr>
+          </tbody>
+        </table>
+        <div>
+          <p class="legenda" id="sondas-resumo">As sondas ainda não rodaram nesta sessão.</p>
+          <table>
+            <thead><tr><th>Sonda</th><th>Esperado</th><th>Obtido</th><th>Resultado</th></tr></thead>
+            <tbody id="sondas"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/comum.js"></script>
+  <script src="/logs.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body class="pagina-auth">
+  <main class="cartao">
+    <p class="marca">Pregão Norte</p>
+    <h1>Entrar no mercado</h1>
+    <p class="legenda">Cada investidor começa com R$ 100.000,00.</p>
+    <% if (erro) { %><p class="aviso" role="alert"><%= erro %></p><% } %>
+    <form method="post" action="/entrar">
+      <label>E-mail<input type="email" name="email" required autocomplete="username"></label>
+      <label>Senha<input type="password" name="senha" required autocomplete="current-password"></label>
+      <button type="submit" class="primario">Entrar</button>
+    </form>
+    <p class="legenda">Ainda não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+  </main>
+</body>
+</html>

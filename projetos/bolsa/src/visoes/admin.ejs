@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <%- include("parciais/topo") %>
+
+  <main class="painel painel-admin" id="conteudo">
+    <section class="area-robos" aria-labelledby="titulo-robos">
+      <h2 id="titulo-robos">Novos perfis de mercado</h2>
+      <p class="legenda">Cria N agentes com estratégia sorteada entre as marcadas. Cada um recebe capital aleatório e um lote inicial de ações de cada papel.</p>
+      <form id="form-robos" class="ordem">
+        <label>Quantidade de perfis
+          <input id="robos-quantidade" type="number" min="1" max="200" step="1" value="20" required>
+        </label>
+        <fieldset class="perfis" id="robos-perfis">
+          <legend>Estratégias que podem ser sorteadas</legend>
+        </fieldset>
+        <div class="duas-colunas">
+          <label>Capital mínimo (R$)
+            <input id="robos-min" type="number" min="1000" max="10000000" step="1000" value="50000" required>
+          </label>
+          <label>Capital máximo (R$)
+            <input id="robos-max" type="number" min="1000" max="10000000" step="1000" value="500000" required>
+          </label>
+        </div>
+        <button type="submit" class="primario" id="criar-robos">Criar 20 perfis</button>
+      </form>
+      <button type="button" class="perigo" id="encerrar-robos">Encerrar todos os robôs</button>
+      <p class="legenda" id="encerrar-ajuda">Cancela as ordens abertas dos robôs e tira todos do mercado. Ana e Bruno continuam.</p>
+    </section>
+
+    <section class="area-ritmo" aria-labelledby="titulo-ritmo">
+      <h2 id="titulo-ritmo">Agentes em atividade</h2>
+      <p class="display" id="agentes-ativos">—</p>
+      <p class="contexto" id="agentes-contexto"></p>
+      <table>
+        <thead><tr><th>Estratégia</th><th class="num">Ativos</th><th class="num">Quebrados</th><th class="num">Fora</th></tr></thead>
+        <tbody id="agentes-perfis"></tbody>
+      </table>
+      <form id="form-ritmo" class="grade-form">
+        <label class="caixa"><input type="checkbox" id="ritmo-ligados" checked> Agentes ligados</label>
+        <label>Intervalo entre rodadas (ms)
+          <input id="ritmo-intervalo" type="number" min="250" max="10000" step="250" value="2000">
+        </label>
+        <label>Agentes por rodada
+          <input id="ritmo-rodada" type="number" min="1" max="50" step="1" value="3">
+        </label>
+        <button type="submit" class="secundario">Salvar ritmo</button>
+      </form>
+    </section>
+
+    <section class="area-carga" aria-labelledby="titulo-carga">
+      <h2 id="titulo-carga">Teste de carga</h2>
+      <p class="legenda">Cria contas reais, faz login por HTTP e dispara ordens simultâneas pela API, como clientes de verdade. Os resultados ficam gravados no banco.</p>
+      <div class="chips" id="carga-presets">
+        <button type="button" class="chip" data-usuarios="5" data-ordens="4">5 usuários</button>
+        <button type="button" class="chip" data-usuarios="20" data-ordens="5">20 usuários</button>
+        <button type="button" class="chip" data-usuarios="50" data-ordens="5">50 usuários</button>
+        <button type="button" class="chip" data-usuarios="100" data-ordens="5">100 usuários</button>
+      </div>
+      <form id="form-carga" class="linha-form">
+        <label class="compacto">Usuários simultâneos
+          <input id="carga-usuarios" type="number" min="1" max="200" step="1" value="20" required>
+        </label>
+        <label class="compacto">Ordens por usuário
+          <input id="carga-ordens" type="number" min="1" max="25" step="1" value="5" required>
+        </label>
+        <button type="submit" class="primario" id="disparar-carga">Disparar teste</button>
+      </form>
+      <p class="contexto" id="carga-estado">Nenhum teste rodando.</p>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Quando</th><th class="num">Usuários</th><th class="num">Ordens</th><th class="num">Aceitas</th><th class="num">Ordens/s</th><th class="num">Média</th><th class="num">p95</th><th class="num">Máx.</th><th class="num">CPU</th></tr></thead>
+          <tbody id="carga-historico"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="area-ranking" aria-labelledby="titulo-ranking">
+      <h2 id="titulo-ranking">Quem está ganhando</h2>
+      <p class="legenda">Lucro líquido = patrimônio − dívida + o que já foi sacado − capital inicial.</p>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>#</th><th>Participante</th><th>Estratégia</th><th>Estado</th><th class="num">Patrimônio</th><th class="num">Dívida</th><th class="num">Lucro</th></tr></thead>
+          <tbody id="ranking"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="area-flush zona-perigo" aria-labelledby="titulo-flush">
+      <h2 id="titulo-flush">Zerar o mercado (FLUSH)</h2>
+      <p class="legenda">Volta o pregão ao estado inicial: apaga ordens, negócios, eventos, notícias, posições, histórico de carga, robôs, baleias e contas de carga. Preços e valor justo voltam ao lançamento, breakers, caos e mundo voltam ao padrão e os contadores de ID recomeçam do 1. As contas mantidas ficam só com o capital inicial em caixa. Os logs da aba Logs são preservados como auditoria.</p>
+      <form id="form-flush" class="linha-form">
+        <label class="caixa"><input type="checkbox" id="flush-humanos"> Apagar também as contas de investidores humanos (o ADMIN fica)</label>
+        <label class="compacto">Digite FLUSH para confirmar
+          <input id="flush-confirmacao" autocomplete="off" spellcheck="false">
+        </label>
+        <button type="submit" class="perigo" id="flush-botao" disabled>Zerar o mercado</button>
+      </form>
+      <p class="contexto" id="flush-resultado"></p>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/comum.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

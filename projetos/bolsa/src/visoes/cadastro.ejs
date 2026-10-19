@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastro · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body class="pagina-auth">
+  <main class="cartao">
+    <p class="marca">Pregão Norte</p>
+    <h1>Abrir conta</h1>
+    <p class="legenda">O capital inicial fica disponível na hora para comprar os quatro ativos do mercado.</p>
+    <% if (erro) { %><p class="aviso" role="alert"><%= erro %></p><% } %>
+    <form method="post" action="/cadastro">
+      <label>Nome<input type="text" name="nome" required minlength="2" autocomplete="name"></label>
+      <label>E-mail<input type="email" name="email" required autocomplete="username"></label>
+      <label>Senha<input type="password" name="senha" required minlength="4" autocomplete="new-password"></label>
+      <p class="legenda">A senha precisa ter pelo menos 4 caracteres.</p>
+      <button type="submit" class="primario">Criar conta e entrar</button>
+    </form>
+    <p class="legenda">Já tem conta? <a href="/entrar">Entrar</a></p>
+  </main>
+</body>
+</html>

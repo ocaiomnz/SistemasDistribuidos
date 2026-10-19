@@ -1,0 +1,28 @@
+<%
+  const titulos = { pregao: "Home Broker", logs: "Logs e segurança", mundo: "Mundo", caos: "O Caos", admin: "Admin" };
+  const abas = [{ id: "pregao", rotulo: "Home Broker", href: "/pregao" }];
+  if (papel === "admin") {
+    abas.push(
+      { id: "logs", rotulo: "Logs", href: "/logs" },
+      { id: "mundo", rotulo: "Mundo", href: "/mundo" },
+      { id: "caos", rotulo: "O Caos", href: "/caos" },
+      { id: "admin", rotulo: "Admin", href: "/admin" }
+    );
+  }
+%>
+<header class="topo">
+  <div>
+    <p class="marca">Pregão Norte</p>
+    <h1><%= titulos[aba] || "Acesso restrito" %></h1>
+  </div>
+  <nav class="abas" aria-label="Áreas do sistema">
+    <% for (const item of abas) { %>
+      <a href="<%= item.href %>" class="aba<%= item.id === aba ? ' atual' : '' %>"<%- item.id === aba ? ' aria-current="page"' : '' %>><%= item.rotulo %></a>
+    <% } %>
+  </nav>
+  <div class="topo-acoes">
+    <p class="quem"><span class="rotulo"><%= papel === "admin" ? "ADMIN" : "Investidor" %></span> <strong><%= nome %></strong></p>
+    <p id="presenca" class="estado-conexao">Conectando</p>
+    <form method="post" action="/sair"><button type="submit" class="secundario">Sair</button></form>
+  </div>
+</header>

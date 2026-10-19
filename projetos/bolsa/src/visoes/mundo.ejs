@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mundo · Pregão Norte</title>
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <%- include("parciais/topo") %>
+
+  <main class="painel painel-mundo" id="conteudo">
+    <section class="area-noticia" aria-labelledby="titulo-noticia">
+      <h2 id="titulo-noticia">Soltar notícia</h2>
+      <p class="legenda">Uma notícia muda o valor justo da empresa e dá um choque na confiança dos robôs. A confiança volta ao neutro com o tempo; o valor justo fica.</p>
+      <form id="form-noticia" class="ordem">
+        <label>Quem é afetado
+          <select id="noticia-ticker"></select>
+        </label>
+        <label>Acontecimento
+          <select id="noticia-modelo"></select>
+        </label>
+        <label>Manchete
+          <input id="noticia-titulo" maxlength="120" required>
+        </label>
+        <label>Intensidade sobre o valor justo
+          <input id="noticia-impacto" type="range" min="-40" max="40" step="1" value="8">
+        </label>
+        <p class="contexto" id="noticia-efeito" aria-live="polite"></p>
+        <button type="submit" class="primario">Publicar notícia</button>
+      </form>
+
+      <form id="form-automaticas" class="bloco">
+        <h3>Notícias automáticas</h3>
+        <p class="legenda">O mundo sorteia acontecimentos sozinho, bons e ruins na mesma proporção.</p>
+        <label class="caixa"><input type="checkbox" id="auto-ligadas"> Sortear notícias</label>
+        <div class="linha-form">
+          <label class="compacto">Intervalo médio (s)
+            <input id="auto-intervalo" type="number" min="10" max="600" step="5" value="45">
+          </label>
+          <label class="compacto">Meia-vida da confiança (s)
+            <input id="auto-meia-vida" type="number" min="15" max="1800" step="15" value="120">
+          </label>
+        </div>
+        <p class="contexto" id="auto-contexto"></p>
+        <button type="submit" class="secundario">Salvar</button>
+      </form>
+    </section>
+
+    <section class="area-confianca" aria-labelledby="titulo-confianca">
+      <h2 id="titulo-confianca">Confiança dos robôs por ação</h2>
+      <p class="legenda" id="confianca-legenda">Os robôs compram quando o preço está abaixo do valor que enxergam e vendem quando está acima.</p>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Ativo</th><th class="num">Preço</th><th class="num">Valor justo</th><th class="num">Preço vs. valor</th><th>Confiança</th><th>Última notícia</th><th>Últimos negócios</th></tr></thead>
+          <tbody id="confianca-ativos"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="area-resultado" aria-labelledby="titulo-resultado">
+      <h2 id="titulo-resultado">Ganhos e perdas</h2>
+      <p class="legenda">Resultado de cada conta = patrimônio − dívida + o que sacou − capital inicial (caixa mais ações recebidas). Robôs, contas de carga, baleias e humanos.</p>
+      <div class="monitor" id="resultado-blocos"></div>
+      <div class="bloco">
+        <h3>Por estratégia</h3>
+        <div class="rolagem">
+          <table>
+            <thead><tr><th>Perfil</th><th class="num">Contas</th><th class="num">Ganhando</th><th class="num">Perdendo</th><th class="num">Resultado</th><th class="num">Retorno</th></tr></thead>
+            <tbody id="resultado-perfis"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="duas-colunas">
+        <div class="bloco">
+          <h3>Maiores ganhos</h3>
+          <table><tbody id="resultado-melhores"></tbody></table>
+        </div>
+        <div class="bloco">
+          <h3>Maiores perdas</h3>
+          <table><tbody id="resultado-piores"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section class="area-feed" aria-labelledby="titulo-feed">
+      <h2 id="titulo-feed">Notícias publicadas</h2>
+      <p class="legenda">Investidores veem a manchete no Home Broker, sem o percentual.</p>
+      <div class="rolagem">
+        <table>
+          <thead><tr><th>Hora</th><th>Ativo</th><th>Manchete</th><th class="num">Impacto</th></tr></thead>
+          <tbody id="noticias"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="area-rodada" aria-labelledby="titulo-rodada">
+      <h2 id="titulo-rodada">Recomeçar rodada</h2>
+      <p class="legenda">Cancela todas as ordens abertas, leva os preços ao valor justo, recolhe as baleias e redistribui o capital inicial de robôs e contas de carga entre caixa e ações. Humanos mantêm caixa e carteira.</p>
+      <div id="rodada-acoes" class="acoes">
+        <button type="button" class="perigo" id="rodada-pedir">Recomeçar rodada</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script src="/comum.js"></script>
+  <script src="/mundo.js"></script>
+</body>
+</html>
