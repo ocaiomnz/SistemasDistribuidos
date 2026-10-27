@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/servidor.js",
     "dev": "node --watch src/servidor.js",
-    "carga": "node scripts/carga.js"
+    "carga": "node scripts/carga.js",
+    "demo:migracao": "node scripts/demo-migracao.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

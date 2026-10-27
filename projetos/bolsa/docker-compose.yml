@@ -23,7 +23,7 @@ services:
   pregao:
     build: .
     ports:
-      - "3000:3000"
+      - "${PREGAO_PORTA:-3000}:3000"
     environment:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306

@@ -61,7 +61,7 @@ npm install
 npm start
 ```
 
-O MySQL do Compose fica publicado na porta 3308 porque 3306 e 3307 costumam estar ocupadas por instalações locais.
+O MySQL do Compose fica publicado na porta 3308 porque 3306 e 3307 costumam estar ocupadas por instalações locais. Se a porta 3000 já estiver em uso, troque a do Home Broker com `PREGAO_PORTA` (no PowerShell, `$env:PREGAO_PORTA=3001` antes do `docker compose up`).
 
 ## Regras do mercado
 
@@ -164,6 +164,31 @@ MySQL 8.4 com InnoDB. Foi escolhido por ter transações ACID, `SELECT ... FOR U
 Restrições no próprio banco impedem saldo negativo, reserva maior que a posição e ordem com quantidade ou preço inválidos. Mesmo que um bug no código tente, o MySQL recusa a gravação.
 
 O estado sobrevive ao reinício porque fica no volume `mysql-dados`.
+
+### Migrações
+
+O `init.sql` só roda quando o volume do MySQL é criado. Tudo o que entrou no esquema depois disso fica em `src/migracoes.js`, chamado por `servidor.js` antes de abrir o pregão. Cada passo consulta o `information_schema` antes de alterar: a coluna, o índice ou a restrição só é criada se ainda não existe, e as tabelas novas usam `CREATE TABLE IF NOT EXISTS`. Por isso a mesma rotina serve para um banco recém-criado, para um banco antigo com dados e para um reinício comum, sem perder nada e sem tabela de versões.
+
+- **Colunas novas** entram com `DEFAULT` ou `NULL`, então as linhas antigas continuam válidas. Quando um valor precisa ser calculado (valor justo dos ativos, perfil de Ana e Bruno), um `UPDATE ... WHERE coluna IS NULL` preenche só o que está vazio.
+- **Restrições `CHECK`** que esbarram em dado antigo inválido não derrubam a subida: o servidor registra `MIGRACAO_AVISO` e continua, e a restrição é tentada de novo no próximo reinício.
+- **Conta ADMIN** é criada se não existir, ou promovida se o e-mail já pertencer a outro papel.
+- Cada alteração aplicada sai no log como `MIGRACAO_APLICADA`. Num reinício sobre um banco já migrado, nenhuma aparece.
+
+Para demonstrar, com o Compose no ar:
+
+```powershell
+docker compose exec pregao node scripts/demo-migracao.js --pausar
+```
+
+O script cria um banco separado (`bolsa_demo_migracao`, o `bolsa` não é tocado) só com o `init.sql` e dados de uso, roda o `migrar()` real e mostra, etapa por etapa: o esquema antigo, os logs da migração, as colunas, tabelas, restrições e índices novos, a comparação linha a linha provando que nenhum dado mudou, a segunda execução sem nenhuma alteração e o MySQL recusando saldo negativo, reserva maior que a posição e ordem inválida. Opções:
+
+| Opção | Efeito |
+| --- | --- |
+| `--pausar` | espera Enter entre as etapas |
+| `--dado-invalido` | grava um saldo negativo antes de migrar, para mostrar o `MIGRACAO_AVISO` e a subida continuando |
+| `--manter` | não apaga o banco no fim; dá para abri-lo no Adminer com `root`/`root` |
+
+Depois de alterar o script, suba de novo com `--build`, porque ele roda de dentro da imagem.
 
 ## Consistência e concorrência
 
@@ -434,6 +459,7 @@ projetos/bolsa
 ├── Dockerfile
 ├── sql/init.sql           esquema base e ativos
 ├── scripts/carga.js       teste de carga pela linha de comando
+├── scripts/demo-migracao.js  demonstração das migrações num banco separado
 └── src
     ├── servidor.js        sobe tudo na ordem certa
     ├── app.js             Express, sessão, cabeçalhos de segurança
